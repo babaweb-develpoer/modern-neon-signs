@@ -182,6 +182,16 @@
   @media (max-width:680px){ .showcase-hero{ grid-template-columns:1fr; justify-items:center; text-align:center; } }
   .showcase-copy h3{ font-size:clamp(1.5rem,3.4vw,2.1rem); color:#fff; }
   .showcase-copy p{ color:var(--text-dim); font-size:14px; margin:8px 0 16px; }
+  .showcase-copy .btn{ margin-bottom:18px; }
+
+  /* mini slideshow of real work, inside the showcase card */
+  .mini-slides{ position:relative; width:120px; height:90px; border-radius:12px; overflow:hidden; border:1px solid var(--line); }
+  .mini-slides img{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    opacity:0; transition:opacity 1s var(--ease); display:block;
+  }
+  .mini-slides img.active{ opacity:1; }
+  .mini-slides-label{ font-size:11px; color:var(--text-dim); margin-top:8px; letter-spacing:.02em; }
 
   /* ---------- 3D neon sign ---------- */
   .neon3d-stage{ perspective:1100px; display:flex; align-items:center; justify-content:center; padding-block:12px; touch-action:pan-y; }
@@ -278,7 +288,12 @@
     display:flex; align-items:center; justify-content:center; padding:32px;
   }
   .lightbox[hidden]{ display:none; }
-  .lightbox img{ max-width:min(92vw,900px); max-height:78vh; border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,.6); }
+  .lightbox img{
+    max-width:min(92vw,900px); max-height:78vh; border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,.6);
+    transition:opacity .22s var(--ease), transform .22s var(--ease); opacity:1; transform:translateX(0);
+  }
+  .lightbox img.lb-out-left{ opacity:0; transform:translateX(-26px); }
+  .lightbox img.lb-out-right{ opacity:0; transform:translateX(26px); }
   .lightbox-caption{ position:absolute; bottom:28px; left:0; right:0; text-align:center; color:var(--text-dim); font-size:14px; }
   .lightbox-close, .lightbox-nav{
     position:absolute; background:var(--glass-strong); border:1px solid var(--line); color:#fff;
@@ -300,9 +315,25 @@
     outline:2px solid var(--cyan); outline-offset:2px;
   }
 
+  /* ---------- carousel (reviews) ---------- */
+  .carousel{ position:relative; max-width:600px; margin-inline:auto; }
+  .carousel-viewport{ overflow:hidden; border-radius:22px; }
+  .carousel-track{ display:flex; transition:transform .55s var(--ease); }
+  .carousel-slide{ flex:0 0 100%; min-width:0; }
+  .carousel-controls{ display:flex; align-items:center; justify-content:center; gap:18px; margin-top:24px; }
+  .carousel-arrow{
+    width:40px; height:40px; border-radius:50%; border:1px solid var(--line); background:rgba(255,255,255,.03);
+    color:var(--text); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:15px;
+    transition:border-color .25s var(--ease), background .25s var(--ease), transform .25s var(--ease); flex:none;
+  }
+  .carousel-arrow:hover{ border-color:var(--line-hi); background:rgba(255,255,255,.07); transform:scale(1.06); }
+  .carousel-dots{ display:flex; align-items:center; gap:8px; }
+  .carousel-dot{ width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.18); border:none; padding:0; cursor:pointer; transition:background .3s var(--ease), transform .3s var(--ease); }
+  .carousel-dot.active{ background:var(--pink); transform:scale(1.35); box-shadow:var(--pink-glow); }
+  .carousel-dot:focus-visible, .carousel-arrow:focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; }
+
   /* ---------- reviews ---------- */
-  .reviews{ display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); }
-  .review{ padding:22px; display:flex; flex-direction:column; gap:12px; }
+  .review{ padding:26px; display:flex; flex-direction:column; gap:12px; height:100%; }
   .review .stars{ font-size:14px; }
   .review p{ margin:0; font-size:14.5px; line-height:1.6; color:var(--text); }
   .review footer{ display:flex; justify-content:space-between; align-items:baseline; font-size:12.5px; color:var(--text-dim); border-top:1px solid var(--line); padding-top:10px; }
@@ -401,6 +432,14 @@
               <h3>Open <span class="accent">24 hours.</span></h3>
               <p>5.0 rating · 22 Google reviews · Liaqat Chowk, Sahiwal</p>
               <a class="btn btn-ghost" href="#gallery">See our work →</a>
+              <div class="mini-slides" id="miniSlides" aria-hidden="true">
+                <img src="images/gallery/usama-shehwal-couple-sign.jpg" alt="" class="active">
+                <img src="images/gallery/farhan-mobile-logo-sign.jpg" alt="">
+                <img src="images/gallery/happy-birthday-rainbow-sign.jpg" alt="">
+                <img src="images/gallery/dental-tooth-sign.jpg" alt="">
+                <img src="images/gallery/cake-shop-neon-sign.jpg" alt="">
+              </div>
+              <p class="mini-slides-label">Recent work</p>
             </div>
             <div>
               <div class="neon3d-stage" id="neon3d-stage">
@@ -558,21 +597,36 @@
       <span class="kicker">From Google reviews</span>
       <h2>22 reviews, a clean 5.0</h2>
     </div>
-    <div class="reviews stagger">
-      <div class="review glass reveal" style="--i:0">
-        <span class="stars">★★★★★</span>
-        <p>"I had a sign made from here which was a great experience — now I have a neon wall clock from them too, also great."</p>
-        <footer><b>Muhammad Abdullah</b><span>a year ago</span></footer>
+    <div class="carousel reveal" id="reviewsCarousel">
+      <div class="carousel-viewport">
+        <div class="carousel-track" id="reviewsTrack">
+          <div class="carousel-slide">
+            <div class="review glass">
+              <span class="stars">★★★★★</span>
+              <p>"I had a sign made from here which was a great experience — now I have a neon wall clock from them too, also great."</p>
+              <footer><b>Muhammad Abdullah</b><span>a year ago</span></footer>
+            </div>
+          </div>
+          <div class="carousel-slide">
+            <div class="review glass">
+              <span class="stars">★★★★★</span>
+              <p>"I ordered a JazzCash neon sign. Great job, good work — you should buy neon signs from there."</p>
+              <footer><b>Ch Ahad</b><span>a year ago</span></footer>
+            </div>
+          </div>
+          <div class="carousel-slide">
+            <div class="review glass">
+              <span class="stars">★★★★★</span>
+              <p>"I have a mobile shop and had a neon sign made by them last year — Mashallah it's still working very well. Great job."</p>
+              <footer><b>Shoaib Jutt</b><span>a year ago</span></footer>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="review glass reveal" style="--i:1">
-        <span class="stars">★★★★★</span>
-        <p>"I ordered a JazzCash neon sign. Great job, good work — you should buy neon signs from there."</p>
-        <footer><b>Ch Ahad</b><span>a year ago</span></footer>
-      </div>
-      <div class="review glass reveal" style="--i:2">
-        <span class="stars">★★★★★</span>
-        <p>"I have a mobile shop and had a neon sign made by them last year — Mashallah it's still working very well. Great job."</p>
-        <footer><b>Shoaib Jutt</b><span>a year ago</span></footer>
+      <div class="carousel-controls">
+        <button class="carousel-arrow" id="reviewsPrev" type="button" aria-label="Previous review">&#10094;</button>
+        <div class="carousel-dots" id="reviewsDots"></div>
+        <button class="carousel-arrow" id="reviewsNext" type="button" aria-label="Next review">&#10095;</button>
       </div>
     </div>
   </section>
@@ -709,10 +763,7 @@
     var currentIndex = 0;
 
     function visibleTiles(){ return allTiles.filter(function(t){ return !t.classList.contains('hide'); }); }
-    function renderLightbox(vis){
-      if(!vis.length) return;
-      if(currentIndex < 0) currentIndex = vis.length - 1;
-      if(currentIndex >= vis.length) currentIndex = 0;
+    function paintLightbox(vis){
       var t = vis[currentIndex];
       var img = t.querySelector('img');
       var cap = t.querySelector('figcaption');
@@ -720,10 +771,21 @@
       lbImg.alt = img.alt;
       lbCaption.textContent = cap ? cap.textContent : '';
     }
+    function renderLightbox(vis, dir){
+      if(!vis.length) return;
+      if(currentIndex < 0) currentIndex = vis.length - 1;
+      if(currentIndex >= vis.length) currentIndex = 0;
+      if(!dir || reduced){ paintLightbox(vis); return; }
+      lbImg.classList.add(dir === 'next' ? 'lb-out-left' : 'lb-out-right');
+      setTimeout(function(){
+        paintLightbox(vis);
+        lbImg.classList.remove('lb-out-left', 'lb-out-right');
+      }, 190);
+    }
     function openAt(tile){
       var vis = visibleTiles();
       currentIndex = vis.indexOf(tile);
-      renderLightbox(vis);
+      paintLightbox(vis);
       lb.hidden = false;
     }
     allTiles.forEach(function(t){
@@ -734,14 +796,79 @@
     });
     lbClose.addEventListener('click', function(){ lb.hidden = true; });
     lb.addEventListener('click', function(ev){ if(ev.target === lb){ lb.hidden = true; } });
-    lbPrev.addEventListener('click', function(){ currentIndex--; renderLightbox(visibleTiles()); });
-    lbNext.addEventListener('click', function(){ currentIndex++; renderLightbox(visibleTiles()); });
+    lbPrev.addEventListener('click', function(){ currentIndex--; renderLightbox(visibleTiles(), 'prev'); });
+    lbNext.addEventListener('click', function(){ currentIndex++; renderLightbox(visibleTiles(), 'next'); });
     document.addEventListener('keydown', function(ev){
       if(lb.hidden) return;
       if(ev.key === 'Escape'){ lb.hidden = true; }
-      else if(ev.key === 'ArrowLeft'){ currentIndex--; renderLightbox(visibleTiles()); }
-      else if(ev.key === 'ArrowRight'){ currentIndex++; renderLightbox(visibleTiles()); }
+      else if(ev.key === 'ArrowLeft'){ currentIndex--; renderLightbox(visibleTiles(), 'prev'); }
+      else if(ev.key === 'ArrowRight'){ currentIndex++; renderLightbox(visibleTiles(), 'next'); }
     });
+  }catch(e){}
+
+  function initCarousel(root, opts){
+    try{
+      opts = opts || {};
+      var track = root.querySelector('.carousel-track');
+      var slides = Array.prototype.slice.call(root.querySelectorAll('.carousel-slide'));
+      var dotsWrap = root.querySelector('.carousel-dots');
+      var prevBtn = document.getElementById(opts.prevId);
+      var nextBtn = document.getElementById(opts.nextId);
+      if(!track || !slides.length) return;
+      var index = 0;
+
+      slides.forEach(function(_, i){
+        var d = document.createElement('button');
+        d.type = 'button';
+        d.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+        d.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+        d.addEventListener('click', function(){ go(i); });
+        dotsWrap.appendChild(d);
+      });
+      var dots = Array.prototype.slice.call(dotsWrap.children);
+
+      function go(i){
+        index = (i + slides.length) % slides.length;
+        track.style.transform = 'translateX(-' + (index * 100) + '%)';
+        dots.forEach(function(d, di){ d.classList.toggle('active', di === index); });
+        restartAutoplay();
+      }
+
+      if(prevBtn) prevBtn.addEventListener('click', function(){ go(index - 1); });
+      if(nextBtn) nextBtn.addEventListener('click', function(){ go(index + 1); });
+
+      var startX = null;
+      track.addEventListener('touchstart', function(ev){ startX = ev.touches[0].clientX; }, { passive:true });
+      track.addEventListener('touchend', function(ev){
+        if(startX === null) return;
+        var dx = ev.changedTouches[0].clientX - startX;
+        if(Math.abs(dx) > 45){ go(index + (dx < 0 ? 1 : -1)); }
+        startX = null;
+      });
+
+      var timer = null;
+      function restartAutoplay(){
+        if(reduced) return;
+        if(timer) clearInterval(timer);
+        timer = setInterval(function(){ go(index + 1); }, 5500);
+      }
+      root.addEventListener('mouseenter', function(){ if(timer) clearInterval(timer); });
+      root.addEventListener('mouseleave', restartAutoplay);
+      restartAutoplay();
+    }catch(e){}
+  }
+  initCarousel(document.getElementById('reviewsCarousel'), { prevId:'reviewsPrev', nextId:'reviewsNext' });
+
+  try{
+    var slideImgs = document.querySelectorAll('#miniSlides img');
+    if(slideImgs.length > 1 && !reduced){
+      var si = 0;
+      setInterval(function(){
+        slideImgs[si].classList.remove('active');
+        si = (si + 1) % slideImgs.length;
+        slideImgs[si].classList.add('active');
+      }, 2600);
+    }
   }catch(e){}
 })();
 </script>
