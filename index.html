@@ -87,10 +87,13 @@
   /* ---------- header ---------- */
   header{
     position:sticky; top:env(safe-area-inset-top,0px); z-index:30;
-    display:flex; align-items:center; justify-content:space-between;
+    display:grid; grid-template-columns:1fr auto 1fr; align-items:center;
     gap:12px; padding-block:20px; transition:padding .4s var(--ease), background .4s var(--ease), border-color .4s var(--ease), border-radius .4s var(--ease), margin .4s var(--ease);
     border:1px solid transparent; margin-inline:0;
   }
+  header .brand{ justify-self:start; }
+  header nav{ justify-self:center; }
+  header .btn{ justify-self:end; }
   header.scrolled{
     padding-block:10px; margin-top:8px;
     background:var(--glass-strong); -webkit-backdrop-filter:blur(20px) saturate(160%); backdrop-filter:blur(20px) saturate(160%);
@@ -196,14 +199,16 @@
   .card p{ margin:0; font-size:14px; color:var(--text-dim); line-height:1.55; }
 
   /* ---------- gallery (real photos) ---------- */
-  .gallery-filters{ display:flex; flex-wrap:wrap; gap:10px; margin-bottom:28px; }
-  .filter-btn{
-    padding:9px 16px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.03);
-    color:var(--text-dim); font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;
-    transition:background .3s var(--ease), color .3s var(--ease), border-color .3s var(--ease), box-shadow .3s var(--ease);
+  .gallery-filters{
+    display:inline-flex; flex-wrap:wrap; gap:6px; margin-bottom:28px; padding:6px;
   }
-  .filter-btn:hover{ color:var(--text); border-color:var(--line-hi); }
-  .filter-btn.active{ background:var(--pink); border-color:var(--pink); color:#1a0410; box-shadow:var(--pink-glow); }
+  .filter-btn{
+    padding:8px 16px; border-radius:999px; border:1px solid transparent; background:transparent;
+    color:var(--text-dim); font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;
+    transition:background .3s var(--ease), color .3s var(--ease), box-shadow .3s var(--ease);
+  }
+  .filter-btn:hover{ color:var(--text); background:rgba(255,255,255,.06); }
+  .filter-btn.active{ background:var(--pink); color:#1a0410; box-shadow:var(--pink-glow); }
 
   .masonry{ column-count:1; column-gap:16px; }
   @media (min-width:620px){ .masonry{ column-count:2; } }
@@ -408,7 +413,7 @@
       <p>A look through the shop — names, brand logos, wall clocks and occasion signs we've built and installed. Tap any photo to see it larger.</p>
     </div>
 
-    <div class="gallery-filters reveal" role="tablist" aria-label="Filter gallery by category">
+    <div class="gallery-filters glass reveal" role="tablist" aria-label="Filter gallery by category">
       <button class="filter-btn active" data-filter="all" type="button">All</button>
       <button class="filter-btn" data-filter="names" type="button">Names &amp; Couples</button>
       <button class="filter-btn" data-filter="business" type="button">Business Signage</button>
